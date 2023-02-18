@@ -55,16 +55,16 @@ DMD::DMD(byte panelsWide, byte panelsHigh)
 
     digitalWrite(PIN_DMD_A, LOW);	// 
     digitalWrite(PIN_DMD_B, LOW);	// 
-    digitalWrite(PIN_DMD_CLK, LOW);	// 
+    //digitalWrite(PIN_DMD_CLK, LOW);	// this pin is managed by SPI
     digitalWrite(PIN_DMD_SCLK, LOW);	// 
-    digitalWrite(PIN_DMD_R_DATA, HIGH);	// 
+    //digitalWrite(PIN_DMD_R_DATA, HIGH);	// this pin is managed by SPI
     digitalWrite(PIN_DMD_nOE, LOW);	//
 
     pinMode(PIN_DMD_A, OUTPUT);	//
     pinMode(PIN_DMD_B, OUTPUT);	//
-    pinMode(PIN_DMD_CLK, OUTPUT);	//
+    //pinMode(PIN_DMD_CLK, OUTPUT);	// this pin is managed by SPI
     pinMode(PIN_DMD_SCLK, OUTPUT);	//
-    pinMode(PIN_DMD_R_DATA, OUTPUT);	//
+    //pinMode(PIN_DMD_R_DATA, OUTPUT);	// this pin is managed by SPI
     pinMode(PIN_DMD_nOE, OUTPUT);	//
     
 
@@ -433,16 +433,18 @@ void DMD::scanDisplayBySPI()
         //SPI transfer pixels to the display hardware shift registers
         int rowsize=DisplaysTotal<<2;
         int offset=rowsize * bDMDByte;
+	   
+	vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
         for (int i=0;i<rowsize;i++) {
-        
-		vspi->beginTransaction(SPISettings(spiClk, MSBFIRST, SPI_MODE0));
-		vspi->transfer(bDMDScreenRAM[offset+i+row3]);
-		vspi->transfer(bDMDScreenRAM[offset+i+row2]);
-		vspi->transfer(bDMDScreenRAM[offset+i+row1]);
-		vspi->transfer(bDMDScreenRAM[offset+i]);
-		vspi->endTransaction();
+            uint8_t transfer_buff[4];
+            transfer_buff[0] = bDMDScreenRAM[offset+i];
+            transfer_buff[1] = bDMDScreenRAM[offset+i+row1];
+            transfer_buff[2] = bDMDScreenRAM[offset+i+row2];
+            transfer_buff[3] = bDMDScreenRAM[offset+i+row3];
 
-       }
+            vspi->transfer32(*((uint32_t*)transfer_buff));
+        }
+        vspi->endTransaction();
         
 
         OE_DMD_ROWS_OFF();
