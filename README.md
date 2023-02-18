@@ -14,5 +14,7 @@ The connection between ESP32 and DMD display shown in the image below:
 ![](https://github.com/MiyukiDark/DMD32/blob/main/connection.png)
 
 
+Up to 23 display modules in series can be used with 4MHz SPI clock and refresh timing as in examples resulting in 1.1kHz. SPI clock can be further increased. 
+
 
 Miyuki
