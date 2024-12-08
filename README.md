@@ -1,4 +1,7 @@
 # Fast DMD32 
+
+Have brightness control via setBrightness method
+
 A library for driving the Freetronics 512 pixel dot matrix LED display "DMD", a 32 x 16 layout using ESP32.
 
 Patched to work with  Arduino-ESP32 2.0.3 and later. 
