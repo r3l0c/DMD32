@@ -34,8 +34,7 @@ Modified by: Khudhur Alfarhan  // Qudoren@gmail.com
 --------------------------------------------------------------------------------------*/
 DMD::DMD(byte panelsWide, byte panelsHigh)
 {
-    ledcSetup(0, 6000, 8);
-    ledcAttachPin(PIN_DMD_nOE, 0);
+    ledcAttachChannel(PIN_DMD_nOE, 800, 8, 0);
     uint16_t ui;
     DisplaysWide = panelsWide;
     DisplaysHigh = panelsHigh;
@@ -49,20 +48,16 @@ DMD::DMD(byte panelsWide, byte panelsHigh)
     vspi = new SPIClass(VSPI);
 
     // initialize the SPI port
-    vspi->begin(); // initiate VSPI with the default pinsinitiat VSPI with the defualt pins
-
-    digitalWrite(PIN_DMD_A, LOW); //
-    digitalWrite(PIN_DMD_B, LOW); //
-    // digitalWrite(PIN_DMD_CLK, LOW);	// this pin is managed by SPI
+    vspi->begin();                   // initiate VSPI with the default pinsinitiat VSPI with the defualt pins
+    pinMode(PIN_DMD_A, OUTPUT);      //
+    pinMode(PIN_DMD_B, OUTPUT);      //
+    pinMode(PIN_DMD_SCLK, OUTPUT);   //
+    digitalWrite(PIN_DMD_A, LOW);    //
+    digitalWrite(PIN_DMD_B, LOW);    //
     digitalWrite(PIN_DMD_SCLK, LOW); //
-
-    ledcWrite(0, 0);
-
-    pinMode(PIN_DMD_A, OUTPUT); //
-    pinMode(PIN_DMD_B, OUTPUT); //
-    // pinMode(PIN_DMD_CLK, OUTPUT);	// this pin is managed by SPI
+    ledcWrite(PIN_DMD_nOE, 0);
     pinMode(PIN_DMD_SCLK, OUTPUT); //
-    ledcWrite(0, brightness);
+    ledcWrite(PIN_DMD_nOE, brightness);
 
     clearScreen(true);
 
@@ -492,7 +487,8 @@ void DMD::scanDisplayBySPI()
         }
         vspi->endTransaction();
 
-        ledcWrite(0, 0);
+        // ledcWriteChannel(0, 0);
+        ledcWrite(PIN_DMD_nOE, 0);
         LATCH_DMD_SHIFT_REG_TO_OUTPUT();
         switch (bDMDByte)
         {
@@ -513,7 +509,8 @@ void DMD::scanDisplayBySPI()
             bDMDByte = 0;
             break;
         }
-        ledcWrite(0, brightness);
+        // ledcWriteChannel(0, brightness);
+        ledcWrite(PIN_DMD_nOE, brightness);
     }
 }
 
