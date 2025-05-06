@@ -136,7 +136,7 @@ class DMD
     // Instantiate the DMD
     DMD(byte panelsWide, byte panelsHigh);
     // virtual ~DMD();
-
+    // void setBrightness(uint8_t brightness);
     // Set or clear a pixel at the x and y location (0,0 is the top left corner)
     void writePixel(unsigned int bX, unsigned int bY, byte bGraphicsMode, byte bPixel);
 
@@ -183,7 +183,7 @@ class DMD
     inline void setBrightness(byte level)
     {
         brightness = level;
-        ledcWrite(0, brightness);
+        ledcWrite(PIN_DMD_nOE, brightness);
     };
 
   private:
