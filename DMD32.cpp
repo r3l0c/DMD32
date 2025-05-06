@@ -34,7 +34,7 @@ Modified by: Khudhur Alfarhan  // Qudoren@gmail.com
 --------------------------------------------------------------------------------------*/
 DMD::DMD(byte panelsWide, byte panelsHigh)
 {
-    ledcAttachChannel(PIN_DMD_nOE, 800, 8, 0);
+    ledcAttachChannel(PIN_DMD_nOE, 4000, 8, 0);
     uint16_t ui;
     DisplaysWide = panelsWide;
     DisplaysHigh = panelsHigh;
