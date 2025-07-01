@@ -108,7 +108,7 @@ LED Panel Layout in RAM
 #define DMD_RAM_SIZE_BYTES ((DMD_PIXELS_ACROSS * DMD_BITSPERPIXEL / 8) * DMD_PIXELS_DOWN)
 // (32x * 1 / 8) = 4 bytes, * 16y = 64 bytes per screen here.
 // lookup table for DMD::writePixel to make the pixel indexing routine faster
-static byte bPixelLookupTable[8] = {
+static uint8_t bPixelLookupTable[8] = {
     0x80, // 0, bit 7
     0x40, // 1, bit 6
     0x20, // 2. bit 5
@@ -134,67 +134,67 @@ class DMD
 {
   public:
     // Instantiate the DMD
-    DMD(byte panelsWide, byte panelsHigh);
+    DMD(uint8_t panelsWide, uint8_t panelsHigh);
     // virtual ~DMD();
     // void setBrightness(uint8_t brightness);
     // Set or clear a pixel at the x and y location (0,0 is the top left corner)
-    void writePixel(unsigned int bX, unsigned int bY, byte bGraphicsMode, byte bPixel);
+    void writePixel(unsigned int bX, unsigned int bY, uint8_t bGraphicsMode, uint8_t bPixel);
 
     // Draw a string
-    void drawString(int bX, int bY, const char *bChars, byte length, byte bGraphicsMode);
+    void drawString(int bX, int bY, const char *bChars, uint8_t length, uint8_t bGraphicsMode);
 
     // Select a text font
     void selectFont(const uint8_t *font);
 
     // Draw a single character
-    int drawChar(const int bX, const int bY, const unsigned char letter, byte bGraphicsMode);
+    int drawChar(const int bX, const int bY, const unsigned char letter, uint8_t bGraphicsMode);
 
     // Find the width of a character
     int charWidth(const unsigned char letter);
 
     // Draw a scrolling string
-    void drawMarquee(const char *bChars, byte length, int left, int top);
+    void drawMarquee(const char *bChars, uint8_t length, int left, int top);
 
     // Move the maquee accross by amount
     boolean stepMarquee(int amountX, int amountY);
 
     // Clear the screen in DMD RAM
-    void clearScreen(byte bNormal);
+    void clearScreen(uint8_t bNormal);
 
     // Draw or clear a line from x1,y1 to x2,y2
-    void drawLine(int x1, int y1, int x2, int y2, byte bGraphicsMode);
+    void drawLine(int x1, int y1, int x2, int y2, uint8_t bGraphicsMode);
 
     // Draw or clear a circle of radius r at x,y centre
-    void drawCircle(int xCenter, int yCenter, int radius, byte bGraphicsMode);
+    void drawCircle(int xCenter, int yCenter, int radius, uint8_t bGraphicsMode);
 
     // Draw or clear a box(rectangle) with a single pixel border
-    void drawBox(int x1, int y1, int x2, int y2, byte bGraphicsMode);
+    void drawBox(int x1, int y1, int x2, int y2, uint8_t bGraphicsMode);
 
     // Draw or clear a filled box(rectangle) with a single pixel border
-    void drawFilledBox(int x1, int y1, int x2, int y2, byte bGraphicsMode);
+    void drawFilledBox(int x1, int y1, int x2, int y2, uint8_t bGraphicsMode);
 
     // Draw the selected test pattern
-    void drawTestPattern(byte bPattern);
+    void drawTestPattern(uint8_t bPattern);
 
     // Scan the dot matrix LED panel display, from the RAM mirror out to the display hardware.
     // Call 4 times to scan the whole display which is made up of 4 interleaved rows within the 16 total rows.
     // Insert the calls to this function into the main loop for the highest call rate, or from a timer interrupt
     void scanDisplayBySPI();
-    inline void setBrightness(byte level)
+    inline void setBrightness(uint8_t level)
     {
         brightness = level;
         ledcWrite(PIN_DMD_nOE, brightness);
     };
 
   private:
-    void drawCircleSub(int cx, int cy, int x, int y, byte bGraphicsMode);
+    void drawCircleSub(int cx, int cy, int x, int y, uint8_t bGraphicsMode);
 
     // Mirror of DMD pixels in RAM, ready to be clocked out by the main loop or high speed timer calls
-    byte *bDMDScreenRAM;
+    uint8_t *bDMDScreenRAM;
 
     // Marquee values
     char marqueeText[256];
-    byte marqueeLength;
+    uint8_t marqueeLength;
     int marqueeWidth;
     int marqueeHeight;
     int marqueeOffsetX;
@@ -204,13 +204,13 @@ class DMD
     const uint8_t *Font;
 
     // Display information
-    byte DisplaysWide;
-    byte DisplaysHigh;
-    byte DisplaysTotal;
+    uint8_t DisplaysWide;
+    uint8_t DisplaysHigh;
+    uint8_t DisplaysTotal;
     int row1, row2, row3;
 
     // scanning pointer into bDMDScreenRAM, setup init @ 48 for the first valid scan
-    volatile byte bDMDByte;
+    volatile uint8_t bDMDByte;
 
     // uninitalised pointer to SPI object
     SPIClass *vspi = NULL;
