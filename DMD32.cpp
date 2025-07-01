@@ -32,7 +32,7 @@ Modified by: Khudhur Alfarhan  // Qudoren@gmail.com
  Note this currently uses the SPI port for the fastest performance to the DMD, be
  careful of possible conflicts with other SPI port devices
 --------------------------------------------------------------------------------------*/
-DMD::DMD(byte panelsWide, byte panelsHigh)
+DMD::DMD(uint8_t panelsWide, uint8_t panelsHigh)
 {
     ledcAttachChannel(PIN_DMD_nOE, 4000, 8, 0);
     uint16_t ui;
@@ -42,7 +42,7 @@ DMD::DMD(byte panelsWide, byte panelsHigh)
     row1 = DisplaysTotal << 4;
     row2 = DisplaysTotal << 5;
     row3 = ((DisplaysTotal << 2) * 3) << 2;
-    bDMDScreenRAM = (byte *)malloc(DisplaysTotal * DMD_RAM_SIZE_BYTES);
+    bDMDScreenRAM = (uint8_t *)malloc(DisplaysTotal * DMD_RAM_SIZE_BYTES);
 
     // initialise instance of the SPIClass attached to vspi
     vspi = new SPIClass(VSPI);
@@ -73,7 +73,7 @@ DMD::DMD(byte panelsWide, byte panelsHigh)
 /*--------------------------------------------------------------------------------------
  Set or clear a pixel at the x and y location (0,0 is the top left corner)
 --------------------------------------------------------------------------------------*/
-void DMD::writePixel(unsigned int bX, unsigned int bY, byte bGraphicsMode, byte bPixel)
+void DMD::writePixel(unsigned int bX, unsigned int bY, uint8_t bGraphicsMode, uint8_t bPixel)
 {
     unsigned int uiDMDRAMPointer;
 
@@ -81,13 +81,13 @@ void DMD::writePixel(unsigned int bX, unsigned int bY, byte bGraphicsMode, byte 
     {
         return;
     }
-    byte panel = (bX / DMD_PIXELS_ACROSS) + (DisplaysWide * (bY / DMD_PIXELS_DOWN));
+    uint8_t panel = (bX / DMD_PIXELS_ACROSS) + (DisplaysWide * (bY / DMD_PIXELS_DOWN));
     bX = (bX % DMD_PIXELS_ACROSS) + (panel << 5);
     bY = bY % DMD_PIXELS_DOWN;
-    // set pointer to DMD RAM byte to be modified
+    // set pointer to DMD RAM uint8_t to be modified
     uiDMDRAMPointer = bX / 8 + bY * (DisplaysTotal << 2);
 
-    byte lookup = bPixelLookupTable[bX & 0x07];
+    uint8_t lookup = bPixelLookupTable[bX & 0x07];
 
     switch (bGraphicsMode)
     {
@@ -125,7 +125,7 @@ void DMD::writePixel(unsigned int bX, unsigned int bY, byte bGraphicsMode, byte 
     }
 }
 
-void DMD::drawString(int bX, int bY, const char *bChars, byte length, byte bGraphicsMode)
+void DMD::drawString(int bX, int bY, const char *bChars, uint8_t length, uint8_t bGraphicsMode)
 {
     if (bX >= (DMD_PIXELS_ACROSS * DisplaysWide) || bY >= DMD_PIXELS_DOWN * DisplaysHigh)
         return;
@@ -154,7 +154,7 @@ void DMD::drawString(int bX, int bY, const char *bChars, byte length, byte bGrap
     }
 }
 
-void DMD::drawMarquee(const char *bChars, byte length, int left, int top)
+void DMD::drawMarquee(const char *bChars, uint8_t length, int left, int top)
 {
     marqueeWidth = 0;
     for (int i = 0; i < length; i++)
@@ -219,7 +219,7 @@ boolean DMD::stepMarquee(int amountX, int amountY)
 
         // Redraw last char on screen
         int strWidth = marqueeOffsetX;
-        for (byte i = 0; i < marqueeLength; i++)
+        for (uint8_t i = 0; i < marqueeLength; i++)
         {
             int wide = charWidth(marqueeText[i]);
             if (strWidth + wide >= DisplaysWide * DMD_PIXELS_ACROSS)
@@ -247,7 +247,7 @@ boolean DMD::stepMarquee(int amountX, int amountY)
 
         // Redraw last char on screen
         int strWidth = marqueeOffsetX;
-        for (byte i = 0; i < marqueeLength; i++)
+        for (uint8_t i = 0; i < marqueeLength; i++)
         {
             int wide = charWidth(marqueeText[i]);
             if (strWidth + wide >= 0)
@@ -269,7 +269,7 @@ boolean DMD::stepMarquee(int amountX, int amountY)
 /*--------------------------------------------------------------------------------------
  Clear the screen in DMD RAM
 --------------------------------------------------------------------------------------*/
-void DMD::clearScreen(byte bNormal)
+void DMD::clearScreen(uint8_t bNormal)
 {
     if (bNormal) // clear all pixels
         memset(bDMDScreenRAM, 0xFF, DMD_RAM_SIZE_BYTES * DisplaysTotal);
@@ -280,7 +280,7 @@ void DMD::clearScreen(byte bNormal)
 /*--------------------------------------------------------------------------------------
  Draw or clear a line from x1,y1 to x2,y2
 --------------------------------------------------------------------------------------*/
-void DMD::drawLine(int x1, int y1, int x2, int y2, byte bGraphicsMode)
+void DMD::drawLine(int x1, int y1, int x2, int y2, uint8_t bGraphicsMode)
 {
     int dy = y2 - y1;
     int dx = x2 - x1;
@@ -343,7 +343,7 @@ void DMD::drawLine(int x1, int y1, int x2, int y2, byte bGraphicsMode)
 /*--------------------------------------------------------------------------------------
  Draw or clear a circle of radius r at x,y centre
 --------------------------------------------------------------------------------------*/
-void DMD::drawCircle(int xCenter, int yCenter, int radius, byte bGraphicsMode)
+void DMD::drawCircle(int xCenter, int yCenter, int radius, uint8_t bGraphicsMode)
 {
     int x = 0;
     int y = radius;
@@ -366,7 +366,7 @@ void DMD::drawCircle(int xCenter, int yCenter, int radius, byte bGraphicsMode)
     }
 }
 
-void DMD::drawCircleSub(int cx, int cy, int x, int y, byte bGraphicsMode)
+void DMD::drawCircleSub(int cx, int cy, int x, int y, uint8_t bGraphicsMode)
 {
 
     if (x == 0)
@@ -399,7 +399,7 @@ void DMD::drawCircleSub(int cx, int cy, int x, int y, byte bGraphicsMode)
 /*--------------------------------------------------------------------------------------
  Draw or clear a box(rectangle) with a single pixel border
 --------------------------------------------------------------------------------------*/
-void DMD::drawBox(int x1, int y1, int x2, int y2, byte bGraphicsMode)
+void DMD::drawBox(int x1, int y1, int x2, int y2, uint8_t bGraphicsMode)
 {
     drawLine(x1, y1, x2, y1, bGraphicsMode);
     drawLine(x2, y1, x2, y2, bGraphicsMode);
@@ -410,7 +410,7 @@ void DMD::drawBox(int x1, int y1, int x2, int y2, byte bGraphicsMode)
 /*--------------------------------------------------------------------------------------
  Draw or clear a filled box(rectangle) with a single pixel border
 --------------------------------------------------------------------------------------*/
-void DMD::drawFilledBox(int x1, int y1, int x2, int y2, byte bGraphicsMode)
+void DMD::drawFilledBox(int x1, int y1, int x2, int y2, uint8_t bGraphicsMode)
 {
     for (int b = x1; b <= x2; b++)
     {
@@ -421,7 +421,7 @@ void DMD::drawFilledBox(int x1, int y1, int x2, int y2, byte bGraphicsMode)
 /*--------------------------------------------------------------------------------------
  Draw the selected test pattern
 --------------------------------------------------------------------------------------*/
-void DMD::drawTestPattern(byte bPattern)
+void DMD::drawTestPattern(uint8_t bPattern)
 {
     unsigned int ui;
 
@@ -519,7 +519,7 @@ void DMD::selectFont(const uint8_t *font)
     this->Font = font;
 }
 
-int DMD::drawChar(const int bX, const int bY, const unsigned char letter, byte bGraphicsMode)
+int DMD::drawChar(const int bX, const int bY, const unsigned char letter, uint8_t bGraphicsMode)
 {
     if (bX > (DMD_PIXELS_ACROSS * DisplaysWide) || bY > (DMD_PIXELS_DOWN * DisplaysHigh))
         return -1;
