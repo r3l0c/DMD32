@@ -46,7 +46,7 @@ DMD::DMD(uint8_t panelsWide, uint8_t panelsHigh)
 
     // initialise instance of the SPIClass attached to vspi
     vspi = new SPIClass(VSPI);
-
+    ledcWrite(PIN_DMD_nOE, 0);
     // initialize the SPI port
     vspi->begin();                   // initiate VSPI with the default pinsinitiat VSPI with the defualt pins
     pinMode(PIN_DMD_A, OUTPUT);      //
@@ -55,9 +55,10 @@ DMD::DMD(uint8_t panelsWide, uint8_t panelsHigh)
     digitalWrite(PIN_DMD_A, LOW);    //
     digitalWrite(PIN_DMD_B, LOW);    //
     digitalWrite(PIN_DMD_SCLK, LOW); //
-    ledcWrite(PIN_DMD_nOE, 0);
-    pinMode(PIN_DMD_SCLK, OUTPUT); //
-    ledcWrite(PIN_DMD_nOE, brightness);
+    // ledcWrite(PIN_DMD_nOE, 0);
+    delayMicroseconds(10);
+    // pinMode(PIN_DMD_SCLK, OUTPUT); //
+    // ledcWrite(PIN_DMD_nOE, brightness);
 
     clearScreen(true);
 
